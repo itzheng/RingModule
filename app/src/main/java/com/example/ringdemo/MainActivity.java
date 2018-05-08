@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         systemRing.setOnStopListener(new IRing.OnStopListener() {
             @Override
             public void onStop() {
-                Log.w(TAG, "onStop: ");
+//                Log.w(TAG, "onStop: ");
                 vibrate.cancel();
             }
         });
