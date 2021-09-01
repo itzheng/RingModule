@@ -5,39 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context="com.example.ringdemo.MainActivity">
 
-    <TextView
+    <Button
+        android:id="@+id/btnRingtone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ToggleButton
-        android:id="@+id/btnMute"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textOff=""
-        android:textOn="Mute" />
+        android:text="Ringtone" />
 
     <Button
-        android:id="@+id/btnPlay"
+        android:id="@+id/btnVibrate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play" />
+        android:text="Vibrate" />
 
     <Button
-        android:id="@+id/btnStop"
+        android:id="@+id/btnRingMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop" />
-
-    <Button
-        android:id="@+id/btnVibrateModel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="VibrateModel" />
+        android:text="Mode" />
 </LinearLayout>
