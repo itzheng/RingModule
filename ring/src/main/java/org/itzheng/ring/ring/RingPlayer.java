@@ -3,21 +3,17 @@ package org.itzheng.ring.ring;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
 
 import org.itzheng.ring.bean.RingItem;
-import org.itzheng.ring.ring.list.IRingtone;
-import org.itzheng.ring.ring.list.SystemRingtone;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * 铃音播放器
  */
-public class RingPlayer {
+public class RingPlayer implements IRingPlayer {
     private Context mContext;
 
     /**
@@ -36,17 +32,7 @@ public class RingPlayer {
         setOnCompletionListener();
         setMute(mIsMute);
         setLooping(mIsLoop);
-//        setRingTime(mStopMillis);
-    }
-
-    /**
-     * 播放指定位置的声音
-     *
-     * @param index
-     */
-    public void playRing(int index) {
-        List<RingItem> ringtones = new SystemRingtone().getRingtone(mContext, RingtoneManager.TYPE_NOTIFICATION);
-        play(ringtones.get(index));
+        setRingTime(mStopMillis);
     }
 
     public void play(RingItem ringItem) {
@@ -60,15 +46,27 @@ public class RingPlayer {
         }
     }
 
+    private boolean mPlaying = false;
+
+    @Override
+    public boolean isPlaying() {
+        return mPlaying;
+    }
+
     /**
      * 播放音乐
      *
      * @param uri
      */
     public void play(Uri uri) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+        }
         mMediaPlayer = MediaPlayer.create(mContext, uri);
         initMediaPlayer();
         mMediaPlayer.start();
+        mPlaying = true;
     }
 
     /**
@@ -77,6 +75,10 @@ public class RingPlayer {
      * @param assetsFile
      */
     public void playFromAssets(String assetsFile) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+        }
         mMediaPlayer = new MediaPlayer();
         try {
             AssetFileDescriptor assetFileDescriptor = mContext.getAssets().openFd(assetsFile);
@@ -89,7 +91,7 @@ public class RingPlayer {
         }
         initMediaPlayer();
         mMediaPlayer.start();
-
+        mPlaying = true;
     }
 
     /**
@@ -111,6 +113,7 @@ public class RingPlayer {
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
+        mPlaying = false;
         onStopListener();
     }
 
@@ -198,16 +201,5 @@ public class RingPlayer {
                 }
             });
         }
-    }
-
-    /**
-     * 铃声监听
-     */
-    public interface OnRingListener {
-        /**
-         * 铃声停止
-         */
-        void onStop();
-
     }
 }

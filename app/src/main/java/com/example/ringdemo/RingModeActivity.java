@@ -1,5 +1,6 @@
 package com.example.ringdemo;
 
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -7,65 +8,66 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
+import org.itzheng.ring.bean.RingItem;
+import org.itzheng.ring.mix.VibrateRingPlayer;
+import org.itzheng.ring.ring.IRingPlayer;
 import org.itzheng.ring.ring.RingPlayer;
+import org.itzheng.ring.ring.list.AssetRingtone;
+import org.itzheng.ring.ring.list.IRingtone;
+import org.itzheng.ring.ring.list.SystemRingtone;
 import org.itzheng.ring.vibrate.impl.MyVibrate;
+
+import java.util.List;
 
 /**
  * 响铃模式，
  * 震动模式
  */
-public class RingModeActivity extends AppCompatActivity {
+public class RingModeActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "RingModeActivity";
+    ToggleButton btnMute;
+    VibrateRingPlayer mPlayer;
+    RingItem mRingItem;
 
+    //    MyVibrate vibrate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ringmode);
-        ToggleButton btnMute = findViewById(R.id.btnMute);
-        Button btnPlay = findViewById(R.id.btnPlay);
-        Button btnStop = findViewById(R.id.btnStop);
-        Button btnVibrateModel = findViewById(R.id.btnVibrateModel);
-        final RingPlayer systemRing = new RingPlayer(this);
-        final MyVibrate vibrate = new MyVibrate(this);
-        btnPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                systemRing.playRing(0);
-                vibrate.startVibrate();
-            }
-        });
-        //手动停止响铃
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                systemRing.stopRing();
-            }
-        });
-        //静音测试
+        IRingtone ringtone = new SystemRingtone();
+        List<RingItem> list = ringtone.getRingtone(this, RingtoneManager.TYPE_RINGTONE);
+        mRingItem = list.get(0);
+        mPlayer = new VibrateRingPlayer(this);
+        mPlayer.setLooping(true);
+        btnMute = findViewById(R.id.btnMute);
         btnMute.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                systemRing.setMute(isChecked);
+                mPlayer.setMute(isChecked);
             }
         });
-        //震动模式测试
-        btnVibrateModel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                long[] longs = {1000, 1000, 1000, 1000};
-                vibrate.setModel(longs, 0);
-            }
-        });
-        //响铃时间测试
-        systemRing.setRingTime(10000);
-        //停止监听测试
-        systemRing.setOnStopListener(new RingPlayer.OnRingListener() {
-            @Override
-            public void onStop() {
-//                Log.w(TAG, "onStop: ");
-                vibrate.cancel();
-            }
-        });
+        findViewById(R.id.btnPlay).setOnClickListener(this);
+        findViewById(R.id.btnStop).setOnClickListener(this);
+        findViewById(R.id.btnVibrateModel).setOnClickListener(this);
+    }
 
+    boolean isVibrate = true;
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnPlay:
+                mPlayer.play(mRingItem);
+                break;
+            case R.id.btnStop:
+                mPlayer.stopRing();
+                break;
+
+            case R.id.btnVibrateModel:
+                isVibrate = !isVibrate;
+                mPlayer.setVibrate(isVibrate);
+                break;
+
+        }
     }
 }
